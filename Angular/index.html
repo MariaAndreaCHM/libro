@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad 2</title>
+    <script src="./index.js"></script>
+    <link rel="stylesheet" href="styele.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body >
+    <h1 style="text-align: center;"> Comments</h1>
+    <div style="display: flex; justify-content: space-around;">
+        <div style="background-color: #caf0f8; height: 800px; width: 40%;" class="boxes">
+            <h2 id="registro">Registro</h2>
+            <form  id="create-form"action="">
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control" id="title"placeholder="Title" required>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control" id="author" placeholder="Author" required>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input type="text" class="form-control" id="description" placeholder="Description" required>
+                      </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                       <button type="submit" class="btn btn-primary btn-lg btn-block" onclick=" postJSON()" >Registrar</button>
+                      </div>
+                </div>
+                
+              </form>
+             
+        </div>
+        <div style="background-color: #023e8a;height: 800px; width: 40%;" class="boxes">
+            <h2>Consulta</h2>
+            <table class="table" id="tbody">
+
+                <thead>
+        
+                  <tr>
+
+                    <th scope="col">Id</th>
+        
+                    <th scope="col">Titulo</th>
+        
+                    <th scope="col">Autor</th>
+        
+                    <th scope="col"> Descripcion</th>
+                    <th scope="col"> Eliminar</th>
+                    <th scope="col"> Actualizar</th>
+                   
+                  </tr>
+        
+                </thead>
+        
+                <tbody id="tbody">
+        
+                  <tr>
+        
+                   
+        
+                  </tr>
+        
+        
+                </tbody>
+        
+              </table>
+
+
+        </div>
+    </div>
+   <!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modificar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form  id="create-form"action="">
+          <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" id="titleUpdate"placeholder="Title" required>
+            </div>
+            <div class="col">
+              <input type="text" class="form-control" id="authorUpdate" placeholder="Author" required>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col">
+                  <input type="text" class="form-control" id="descriptionUpdate" placeholder="Description" required>
+                </div>
+          </div>
+          <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" id="dateUpdate" placeholder="Fecha" >
+                <input type="text" class="form-control" id="id" hidden >
+              </div>
+        </div>
+          
+          
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cerrar</button>
+        <button type="submit" class="btn btn-primary" onclick="update()">guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+ <script>
+                        $('#create-form').submit(function (e) {
+                            e.preventDefault(); // No recargar la página
+                            $.ajax({
+                                type: "POST",
+                                url: "http://localhost:5207/api/Comment/Store",
+                                contentType: "application/json", // Configurar el tipo de contenido a JSON
+                                data: JSON.stringify({  // Convertir los datos a formato JSON
+                                    id: 0,
+                                    title: $("#title").val(),
+                                    description: $('#description').val(),
+                                    author: $("#author").val(),
+                                    createdAt: new Date()
+                                }),
+                            })
+                                .done(function (response) {
+                                    console.log(response);
+                                    
+                showTable();
+                                })
+                                .fail(function (jqXHR, testStatus) {
+                                    alert("Error");
+                                });
+                //location.reload();
+                        });
+                
+                    </script>
+
+</body>
+
+</html>
